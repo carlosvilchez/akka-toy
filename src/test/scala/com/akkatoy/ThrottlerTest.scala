@@ -2,12 +2,13 @@ package com.akkatoy
 
 import org.scalatest.matchers.MustMatchers
 import org.scalatest.WordSpec
-import akka.actor.{Props, ActorSystem}
+import akka.actor.{ActorLogging, Props, ActorSystem}
 import akka.testkit.TestKit
 import scala.concurrent.duration._
 import akka.contrib.throttle._
 import Throttler._
 import scala.collection.immutable.Queue
+import com.akkatoy.EchoProtocol.EchoMsg
 
 class ThrottlerTest extends TestKit(ActorSystem("testsystem"))
 with WordSpec
@@ -20,18 +21,23 @@ with StopSystemAfterAll {
       val echo = system.actorOf(Props[EchoActor])
 
       // The throttler for this example, setting the rate
-      val throttler = system.actorOf(Props(new TimerBasedThrottler(3 msgsPer (1 second))))
+      val throttler = system.actorOf(Props(new TimerBasedThrottler(3 msgsPer (1 second)) with ActorLogging {
+          override def aroundReceive(recv: Receive, msg: Any) {
+            log.info(msg.toString)
+            super.aroundReceive(recv, msg)
+          }
+        }))
 
       // Set the target
       throttler ! SetTarget(Some(echo))
 
-      throttler ! Queue("1")
-      throttler ! Queue("2")
-      throttler ! Queue("3")
-      throttler ! Queue("4")
-      throttler ! Queue("5")
-      throttler ! Queue("6")
-      throttler ! Queue("7")
+      throttler ! EchoMsg(throttler, Queue("1"))
+      throttler ! EchoMsg(throttler, Queue("2"))
+      throttler ! EchoMsg(throttler, Queue("3"))
+      throttler ! EchoMsg(throttler, Queue("4"))
+      throttler ! EchoMsg(throttler, Queue("5"))
+      throttler ! EchoMsg(throttler, Queue("6"))
+      throttler ! EchoMsg(throttler, Queue("7"))
 
       within(2 second) {
         expectMsg("1")
