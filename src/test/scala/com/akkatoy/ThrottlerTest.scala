@@ -21,12 +21,7 @@ with StopSystemAfterAll {
       val echo = system.actorOf(Props[EchoActor])
 
       // The throttler for this example, setting the rate
-      val throttler = system.actorOf(Props(new TimerBasedThrottler(3 msgsPer (1 second)) with ActorLogging {
-          override def aroundReceive(recv: Receive, msg: Any) {
-            log.info(msg.toString)
-            super.aroundReceive(recv, msg)
-          }
-        }))
+      val throttler = system.actorOf(Props(new TimerBasedThrottler(3 msgsPer (1 second))))
 
       // Set the target
       throttler ! SetTarget(Some(echo))
