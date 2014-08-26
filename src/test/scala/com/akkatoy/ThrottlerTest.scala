@@ -26,29 +26,29 @@ with StopSystemAfterAll {
       // Set the target
       throttler ! SetTarget(Some(echo))
 
-      throttler ! EchoMsg(throttler, Queue("1"))
-      throttler ! EchoMsg(throttler, Queue("2"))
-      throttler ! EchoMsg(throttler, Queue("3"))
-      throttler ! EchoMsg(throttler, Queue("4"))
-      throttler ! EchoMsg(throttler, Queue("5"))
-      throttler ! EchoMsg(throttler, Queue("6"))
-      throttler ! EchoMsg(throttler, Queue("7"))
+      throttler ! EchoMsg(testActor, Queue("1"))
+      throttler ! EchoMsg(testActor, Queue("2"))
+      throttler ! EchoMsg(testActor, Queue("3"))
+      throttler ! EchoMsg(testActor, Queue("4"))
+      throttler ! EchoMsg(testActor, Queue("5"))
+      throttler ! EchoMsg(testActor, Queue("6"))
+      throttler ! EchoMsg(testActor, Queue("7"))
 
-      within(2 second) {
-        expectMsg("1")
+      within(1 second) {
+        expectMsg(Queue("1"))
         expectMsg(Queue("2"))
         expectMsg(Queue("3"))
         expectNoMsg(remaining)
       }
 
-      within(2 second) {
+      within(1 second) {
         expectMsg(Queue("4"))
         expectMsg(Queue("5"))
         expectMsg(Queue("6"))
         expectNoMsg(remaining)
       }
 
-      within(2 seconds) {
+      within(1 seconds) {
         expectMsg(Queue("7"))
       }
     }
