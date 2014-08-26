@@ -1,4 +1,4 @@
-name := "recepcionist"
+name := "akkatoy"
 
 version := "0.1-SNAPSHOT"
 
